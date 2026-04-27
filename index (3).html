@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#0F6E56">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mexico Trip">
+<title>Mexico Trip · May 2–12</title>
+<style>
+:root {
+  --bg: #fafaf7;
+  --card: #ffffff;
+  --text: #1f1f1d;
+  --muted: #6b6b66;
+  --line: #e8e6e0;
+  --accent: #0F6E56;
+  --accent-soft: #E1F5EE;
+  --warn: #BA7517;
+  --warn-soft: #FAEEDA;
+  --danger: #A32D2D;
+  --info: #185FA5;
+  --info-soft: #E6F1FB;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15151a;
+    --card: #1f1f24;
+    --text: #f0eee7;
+    --muted: #9d9d96;
+    --line: #2e2e36;
+    --accent: #5DCAA5;
+    --accent-soft: #1a3530;
+    --warn: #EF9F27;
+    --warn-soft: #3a2c10;
+    --info: #85B7EB;
+    --info-soft: #142b46;
+  }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body { padding-bottom: 80px; padding-top: env(safe-area-inset-top); }
+.container { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+header { background: var(--accent); color: white; padding: 18px 16px 16px; margin-bottom: 16px; }
+header h1 { margin: 0 0 2px; font-size: 20px; font-weight: 600; }
+header .sub { font-size: 13px; opacity: 0.85; }
+.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--line); display: flex; justify-content: space-around; padding: 8px 4px env(safe-area-inset-bottom); z-index: 100; }
+.tab { flex: 1; padding: 6px 4px; text-align: center; font-size: 11px; color: var(--muted); cursor: pointer; border: none; background: none; font-family: inherit; transition: color 0.15s; }
+.tab.active { color: var(--accent); font-weight: 600; }
+.tab .icon { display: block; font-size: 20px; margin-bottom: 2px; line-height: 1; }
+.view { display: none; }
+.view.active { display: block; }
+.card { background: var(--card); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--line); }
+.card.tight { padding: 12px 14px; }
+.card h2 { font-size: 17px; margin: 0 0 10px; font-weight: 600; }
+.card h3 { font-size: 15px; margin: 14px 0 6px; font-weight: 600; }
+.card h3:first-child { margin-top: 0; }
+.muted { color: var(--muted); font-size: 14px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; background: var(--accent-soft); color: var(--accent); margin-right: 4px; }
+.tag.warn { background: var(--warn-soft); color: var(--warn); }
+.tag.info { background: var(--info-soft); color: var(--info); }
+.day-list { display: flex; flex-direction: column; gap: 8px; }
+.day-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.day-card:active { background: var(--accent-soft); }
+.day-card.today { border-color: var(--accent); border-width: 2px; padding: 13px 15px; }
+.day-card .info { flex: 1; min-width: 0; }
+.day-card .date { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.day-card .title { font-weight: 600; font-size: 15px; line-height: 1.3; }
+.day-card .arrow { color: var(--muted); font-size: 22px; line-height: 1; flex-shrink: 0; }
+.day-detail { display: none; }
+.day-detail.active { display: block; }
+.back-btn { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; color: var(--accent); font-size: 15px; padding: 0 0 12px; cursor: pointer; font-family: inherit; font-weight: 500; }
+.schedule-item { display: flex; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--line); }
+.schedule-item:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.schedule-item .time { flex-shrink: 0; width: 70px; font-size: 13px; color: var(--muted); font-weight: 500; padding-top: 1px; }
+.schedule-item .body { flex: 1; min-width: 0; }
+.schedule-item .body .name { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+.schedule-item .body .desc { font-size: 14px; color: var(--muted); line-height: 1.45; }
+.schedule-item .body .desc a { color: var(--accent); text-decoration: none; }
+.alert { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 10px 12px; border-radius: var(--radius-sm); font-size: 13px; margin: 0 0 12px; color: var(--text); }
+.alert.info { background: var(--info-soft); border-left-color: var(--info); }
+.alert strong { color: var(--warn); }
+.alert.info strong { color: var(--info); }
+.kv { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 14px; margin: 8px 0; }
+.kv .k { color: var(--muted); }
+.kv .v { font-weight: 500; word-break: break-word; }
+.kv .v.copy { color: var(--accent); cursor: pointer; user-select: all; }
+.copyable { background: var(--accent-soft); padding: 8px 10px; border-radius: var(--radius-sm); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 14px; cursor: pointer; user-select: all; word-break: break-all; display: inline-block; margin: 2px 0; color: var(--accent); font-weight: 500; }
+.tel { color: var(--accent); text-decoration: none; font-weight: 500; }
+.section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin: 18px 0 8px; padding: 0 4px; }
+.section-title:first-child { margin-top: 4px; }
+.checklist-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item input[type=checkbox] { flex-shrink: 0; width: 20px; height: 20px; margin: 0; cursor: pointer; accent-color: var(--accent); }
+.checklist-item .ctext { flex: 1; font-size: 14px; line-height: 1.4; }
+.checklist-item.done .ctext { color: var(--muted); text-decoration: line-through; }
+.checklist-item .meta { font-size: 12px; color: var(--muted); margin-top: 2px; display: block; }
+.budget-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.budget-row:last-child { border-bottom: none; }
+.budget-row.total { border-top: 2px solid var(--text); border-bottom: none; padding-top: 12px; margin-top: 8px; font-weight: 600; font-size: 15px; }
+.budget-row .amt { font-weight: 500; font-variant-numeric: tabular-nums; }
+.eat-pill-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.eat-pill { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); font-size: 13px; cursor: pointer; color: var(--text); font-family: inherit; }
+.eat-pill.active { background: var(--accent); color: white; border-color: var(--accent); }
+.eat-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; }
+.eat-card .name { font-weight: 600; font-size: 15px; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+.eat-card .star { color: var(--warn); font-size: 12px; }
+.eat-card .desc { font-size: 13px; color: var(--muted); line-height: 1.45; margin: 4px 0; }
+.eat-card .meta { font-size: 12px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.eat-card .meta a { color: var(--accent); text-decoration: none; }
+.action-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; background: var(--accent-soft); color: var(--accent) !important; border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; text-decoration: none; }
+.action-btn:active { transform: scale(0.97); }
+.search-box { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--card); color: var(--text); font-size: 14px; font-family: inherit; margin-bottom: 12px; -webkit-appearance: none; }
+.alt-section { background: var(--info-soft); border-radius: var(--radius-sm); padding: 10px 12px; margin-top: 10px; font-size: 13px; }
+.alt-section strong { color: var(--info); display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; }
+hr { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
+.emergency-btn { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; text-decoration: none; color: var(--text); margin-bottom: 8px; }
+.emergency-btn .ico { width: 36px; height: 36px; background: var(--accent-soft); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); font-weight: 600; flex-shrink: 0; }
+.emergency-btn .info { flex: 1; min-width: 0; }
+.emergency-btn .label { font-weight: 600; font-size: 15px; }
+.emergency-btn .num { font-size: 13px; color: var(--muted); }
+.tip-row { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
+.tip-row:last-child { border-bottom: none; }
+.tip-row .bullet { color: var(--accent); font-weight: 600; flex-shrink: 0; width: 16px; }
+.tip-row .ctext { font-size: 14px; line-height: 1.5; }
+.exchange-card { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+.exchange-cell { background: var(--accent-soft); padding: 12px; border-radius: var(--radius-sm); text-align: center; }
+.exchange-cell .num { font-size: 18px; font-weight: 600; color: var(--accent); }
+.exchange-cell .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+.notes-fab { position: fixed; bottom: calc(70px + env(safe-area-inset-bottom)); right: 16px; background: var(--warn); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; border: none; z-index: 99; }
+.notes-fab:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>🇲🇽 Brown Mexico Trip</h1>
+    <div class="sub">May 2–12, 2026 · SMA → Bernal → CDMX</div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- TODAY VIEW -->
+<div class="view active" id="view-today">
+  <div id="today-content"></div>
+  <div class="section-title">Quick access</div>
+  <a href="#" class="emergency-btn" onclick="showView('travel'); return false;">
+    <div class="ico" style="background: var(--info-soft); color: var(--info);">✈️</div>
+    <div class="info"><div class="label">Flights & rental car</div><div class="num">Confirmation numbers, times, eTickets</div></div>
+  </a>
+  <a href="#" class="emergency-btn" onclick="showView('stays'); return false;">
+    <div class="ico">🏠</div>
+    <div class="info"><div class="label">Where we're staying</div><div class="num">House notes, WiFi, gate codes</div></div>
+  </a>
+  <a href="#" class="emergency-btn" onclick="showView('eat'); return false;">
+    <div class="ico">🍽️</div>
+    <div class="info"><div class="label">Eat & drink</div><div class="num">Hosts' picks + ours, by city</div></div>
+  </a>
+  <a href="#" class="emergency-btn" onclick="showView('bookings'); return false;">
+    <div class="ico">✓</div>
+    <div class="info"><div class="label">Bookings checklist</div><div class="num">Track what's booked</div></div>
+  </a>
+  <a href="#" class="emergency-btn" onclick="openNotes(); return false;">
+    <div class="ico" style="background: var(--warn-soft); color: var(--warn);">📝</div>
+    <div class="info"><div class="label">Live notes (shared)</div><div class="num">Edit together — opens shared doc</div></div>
+  </a>
+</div>
+
+<!-- DAYS VIEW -->
+<div class="view" id="view-days">
+  <div id="days-list"></div>
+  <div id="day-detail-container"></div>
+</div>
+
+<!-- STAYS VIEW -->
+<div class="view" id="view-stays">
+  <div class="section-title">San Miguel · Casa Mel (May 2–8)</div>
+  <div class="card">
+    <h2>Casa Melissa</h2>
+    <div class="muted" style="margin-bottom: 8px;">Fray José Guadalupe Mojica No. 18, House #5, Colonia Parque Juárez</div>
+    <a href="https://www.google.com/maps/search/?api=1&query=20.907804,-100.7421008" target="_blank" class="action-btn" style="margin-bottom: 12px;">🗺️ Open in Maps</a>
+    <div class="alert"><strong>Important:</strong> Tell drivers <em>"Parque Juárez"</em> — there's another house with the same address in a different part of town. Reference: <em>next to Hotel Villa Santa Mónica</em>.</div>
+    <h3>WiFi</h3>
+    <div class="kv">
+      <div class="k">Network</div><div class="v">Huizache</div>
+      <div class="k">Password</div><div class="v"><span class="copyable" onclick="copyText(this)">esperanza</span></div>
+    </div>
+    <h3>Gate codes</h3>
+    <div class="kv">
+      <div class="k">Pedestrian</div><div class="v"><span class="copyable" onclick="copyText(this)">1555ent</span> (black keypad)</div>
+      <div class="k">Car entry</div><div class="v"><span class="copyable" onclick="copyText(this)">1723ent</span> (grey box)</div>
+    </div>
+    <h3>House staff</h3>
+    <div class="kv">
+      <div class="k">Housekeeper</div><div class="v">Martha</div>
+      <div class="k">Pool/gardens</div><div class="v">Luciano (has a key if locked out)</div>
+      <div class="k">WhatsApp</div><div class="v"><a class="tel" href="https://wa.me/524151700359">+52 415 170 0359</a></div>
+      <div class="k">Master gardener</div><div class="v">Alexandro</div>
+    </div>
+    <h3>Phone numbers</h3>
+    <div class="kv">
+      <div class="k">House</div><div class="v"><a class="tel" href="tel:+524151547030">415-154-7030</a></div>
+      <div class="k">Lynn (host)</div><div class="v"><a class="tel" href="tel:+528302379191">+52 830-237-9191</a></div>
+      <div class="k">Mark (Casa Mel)</div><div class="v"><a class="tel" href="tel:+17133609006">+1 713-360-9006</a></div>
+      <div class="k">Melissa (Casa Mel)</div><div class="v"><a class="tel" href="tel:+17135427849">+1 713-542-7849</a></div>
+    </div>
+    <h3>Other notes</h3>
+    <div class="muted" style="font-size: 13px; line-height: 1.6;">
+      • Tip BajioGo driver 100 pesos / $5 USD per bag<br>
+      • Sonos works on your personal account<br>
+      • Firestick is set up on the upstairs TV<br>
+      • Switch for the fish pond is on the wall left of the pond<br>
+      • Lock your bedroom door at night as a precaution
+    </div>
+  </div>
+
+  <div class="section-title">Mexico City · AMS250 (May 8–12)</div>
+  <div class="card">
+    <h2>Hipódromo Condesa Apartment</h2>
+    <div class="muted" style="margin-bottom: 8px;">Amsterdam 250, Depto 101, Hipódromo Condesa, 06100 CDMX</div>
+    <a href="https://www.google.com/maps/search/?api=1&query=19.4116,-99.1721" target="_blank" class="action-btn" style="margin-bottom: 12px;">🗺️ Open in Maps</a>
+    <h3>WiFi</h3>
+    <div class="kv">
+      <div class="k">Network</div><div class="v">Totalplay</div>
+      <div class="k">Username</div><div class="v"><span class="copyable" onclick="copyText(this)">@Usche08</span></div>
+      <div class="k">Password</div><div class="v"><span class="copyable" onclick="copyText(this)">859FC5444XxtgTut</span></div>
+    </div>
+    <h3>Front door</h3>
+    <div class="kv">
+      <div class="k">Code</div><div class="v"><span class="copyable" onclick="copyText(this)">2580</span></div>
+    </div>
+    <h3>Housekeeper</h3>
+    <div class="kv">
+      <div class="k">Name</div><div class="v">Nury Elena</div>
+    </div>
+  </div>
+</div>
+
+<!-- EAT & DRINK VIEW -->
+<div class="view" id="view-eat">
+  <div class="eat-pill-row">
+    <button class="eat-pill active" onclick="filterEat('all')">All</button>
+    <button class="eat-pill" onclick="filterEat('sma')">SMA</button>
+    <button class="eat-pill" onclick="filterEat('cdmx')">CDMX</button>
+    <button class="eat-pill" onclick="filterEat('host')">Host picks ★</button>
+  </div>
+  <input type="text" class="search-box" placeholder="Search by name..." id="eat-search" oninput="searchEat()">
+  <div id="eat-list"></div>
+</div>
+
+<!-- TRAVEL VIEW (flights + rental car + confirmations) -->
+<div class="view" id="view-travel">
+  <div class="section-title">Outbound · Sat May 2</div>
+  <div class="card">
+    <h2>Asheville → Querétaro</h2>
+    <div class="muted" style="font-size: 13px; margin-bottom: 8px;">Delta · Confirmation <span class="copyable" onclick="copyText(this)">GTQWKJ</span></div>
+
+    <div class="schedule-item">
+      <div class="time">11:49 AM</div>
+      <div class="body">
+        <div class="name">DL1182 · AVL → ATL</div>
+        <div class="desc">Boeing 717-200 · Arrives ATL 12:57 PM (Domestic Term-South)</div>
+      </div>
+    </div>
+    <div class="muted" style="font-size: 12px; padding: 4px 0 12px 82px;">↓ Layover 2h 28m · Change planes in Atlanta</div>
+    <div class="schedule-item">
+      <div class="time">3:25 PM</div>
+      <div class="body">
+        <div class="name">AM2711 · ATL → QRO</div>
+        <div class="desc">Embraer 190 · Operated by Aerolitoral DBA Aeromexico Connect · Arrives QRO 5:30 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Return · Tue May 12</div>
+  <div class="card">
+    <h2>Mexico City → Asheville</h2>
+    <div class="muted" style="font-size: 13px; margin-bottom: 8px;">Same confirmation · <span class="copyable" onclick="copyText(this)">GTQWKJ</span></div>
+
+    <div class="schedule-item">
+      <div class="time">3:45 PM</div>
+      <div class="body">
+        <div class="name">DL0599 · MEX → ATL</div>
+        <div class="desc">Boeing 757 · Departs MEX Terminal 2 · Arrives ATL 9:15 PM (International Term)</div>
+      </div>
+    </div>
+    <div class="muted" style="font-size: 12px; padding: 4px 0 12px 82px;">↓ Layover 1h 27m · Change planes in Atlanta</div>
+    <div class="schedule-item">
+      <div class="time">10:42 PM</div>
+      <div class="body">
+        <div class="name">DL3071 · ATL → AVL</div>
+        <div class="desc">Boeing 717-200 · Departs ATL Domestic Term-South · Arrives AVL 11:39 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Passengers</div>
+  <div class="card">
+    <h3>Stephen Brown</h3>
+    <div class="kv">
+      <div class="k">SkyMiles</div><div class="v">Gold Medallion · Elite Plus</div>
+      <div class="k">eTicket #</div><div class="v"><span class="copyable" onclick="copyText(this)">0062419818398</span></div>
+      <div class="k">Class</div><div class="v">Delta Main (NX)</div>
+    </div>
+    <h3>Alyssa V Brown</h3>
+    <div class="kv">
+      <div class="k">SkyMiles</div><div class="v">Member</div>
+      <div class="k">eTicket #</div><div class="v"><span class="copyable" onclick="copyText(this)">0062419818400</span></div>
+      <div class="k">Class</div><div class="v">Delta Main (NX)</div>
+      <div class="k">Seats (return)</div><div class="v">21D & 21E</div>
+    </div>
+    <a href="https://www.delta.com/mytrips" target="_blank" class="action-btn" style="margin-top: 8px;">↗ Manage on Delta</a>
+  </div>
+
+  <div class="section-title">Rental Car</div>
+  <div class="card">
+    <h2>Hertz · Compact Crossover</h2>
+    <div class="muted" style="font-size: 13px; margin-bottom: 8px;">Renault Duster or similar · $335.38 (paid)</div>
+    <div class="kv">
+      <div class="k">Confirmation</div><div class="v"><span class="copyable" onclick="copyText(this)">L56713256D3</span></div>
+      <div class="k">Member #</div><div class="v"><span class="copyable" onclick="copyText(this)">97682059</span></div>
+      <div class="k">Pickup</div><div class="v">QRO Airport · Sat May 2, 5:00 PM</div>
+      <div class="k">Drop-off</div><div class="v">MEX Airport · Fri May 8, 5:00 PM</div>
+    </div>
+    <div class="alert info" style="margin-top: 12px;">
+      <strong>Heads up:</strong> Drop-off is at MEX airport on May 8, but you fly home from MEX on May 12. After dropping the car, Uber to Condesa apartment (~$18, 30 min). Plan settled.
+    </div>
+    <a href="https://www.hertz.com/rentacar/reservation/" target="_blank" class="action-btn" style="margin-top: 8px;">↗ Manage on Hertz</a>
+  </div>
+
+  <div class="section-title">Other reservations</div>
+  <div class="card tight">
+    <h3 style="margin-top: 0;">Frida Kahlo Museum (Casa Azul)</h3>
+    <div class="kv">
+      <div class="k">Order ID</div><div class="v"><span class="copyable" onclick="copyText(this)">R111412898</span></div>
+      <div class="k">Date/time</div><div class="v">Sun May 10, 2:30–2:45 PM</div>
+      <div class="k">Includes</div><div class="v">2x General + 2x Anahuacalli add-on</div>
+      <div class="k">Total</div><div class="v">$671.88 (paid)</div>
+    </div>
+    <div class="alert" style="margin-top: 10px;">⚠️ Strict 15-min entry window. Be there by 2:25 PM.</div>
+  </div>
+
+  <div class="section-title">Quick links</div>
+  <a href="#" class="emergency-btn" onclick="showView('budget'); return false;">
+    <div class="ico">$</div>
+    <div class="info"><div class="label">Budget</div><div class="num">Track spend vs. $2,500 cap</div></div>
+  </a>
+</div>
+
+<!-- BOOKINGS VIEW -->
+<div class="view" id="view-bookings">
+  <div class="section-title">Locked in</div>
+  <div class="card tight">
+    <div class="checklist-item done">
+      <input type="checkbox" checked disabled>
+      <div class="ctext">
+        <strong>Frida Kahlo Museum + Anahuacalli</strong>
+        <span class="meta">Sun May 10, 2:30–2:45 PM entry · Order R111412898 · $671.88</span>
+      </div>
+    </div>
+    <div class="checklist-item done">
+      <input type="checkbox" checked disabled>
+      <div class="ctext">
+        <strong>Delta flights AVL ↔ MEX</strong>
+        <span class="meta">Confirmation GTQWKJ · Stephen + Alyssa</span>
+      </div>
+    </div>
+    <div class="checklist-item done">
+      <input type="checkbox" checked disabled>
+      <div class="ctext">
+        <strong>Hertz car rental</strong>
+        <span class="meta">L56713256D3 · QRO May 2 → MEX May 8 · $335.38</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Book this week</div>
+  <div class="card tight" id="todo-list"></div>
+
+  <div class="section-title">Pre-trip prep</div>
+  <div class="card tight" id="prep-list"></div>
+</div>
+
+<!-- BUDGET VIEW -->
+<div class="view" id="view-budget">
+  <div class="card">
+    <h2>Budget snapshot</h2>
+    <div class="exchange-card">
+      <div class="exchange-cell"><div class="num">$2,500</div><div class="lbl">Cap</div></div>
+      <div class="exchange-cell"><div class="num">~$2,500</div><div class="lbl">Estimate</div></div>
+    </div>
+    <div class="muted" style="font-size: 13px;">Lodging is free. Hertz already paid. The rest is food, activities, transport on the ground.</div>
+  </div>
+
+  <div class="card">
+    <h2>By category</h2>
+    <div class="budget-row"><span>Hertz (paid)</span><span class="amt">$335</span></div>
+    <div class="budget-row"><span>Gas + tolls</span><span class="amt">$90</span></div>
+    <div class="budget-row"><span>Uber CDMX (4 days)</span><span class="amt">$80</span></div>
+    <div class="budget-row"><span>MEX airport Ubers</span><span class="amt">$40</span></div>
+    <div class="budget-row"><span>Horseback ride (2)</span><span class="amt">$300</span></div>
+    <div class="budget-row"><span>La Gruta entry (2)</span><span class="amt">$30</span></div>
+    <div class="budget-row"><span>Hike + tour entries</span><span class="amt">$30</span></div>
+    <div class="budget-row"><span>Museums (Templo, Bellas Artes, Anthropology, Castillo)</span><span class="amt">$90</span></div>
+    <div class="budget-row"><span>Cooking class OR Cañada de la Virgen</span><span class="amt">$180</span></div>
+    <div class="budget-row"><span>Frida (paid)</span><span class="amt">$215</span></div>
+    <div class="budget-row"><span>Bernal stop</span><span class="amt">$5</span></div>
+    <div class="budget-row"><span>SMA dinners (6)</span><span class="amt">$360</span></div>
+    <div class="budget-row"><span>SMA breakfasts/lunches</span><span class="amt">$180</span></div>
+    <div class="budget-row"><span>CDMX dinners (4, incl. one splurge)</span><span class="amt">$350</span></div>
+    <div class="budget-row"><span>CDMX breakfasts/lunches</span><span class="amt">$160</span></div>
+    <div class="budget-row"><span>Drinks/coffee/mezcal</span><span class="amt">$100</span></div>
+    <div class="budget-row"><span>Misc + shopping + tips</span><span class="amt">$170</span></div>
+    <div class="budget-row total"><span>Estimated total</span><span class="amt">~$2,715</span></div>
+    <div class="muted" style="font-size: 12px; margin-top: 6px;">Frida already paid bumps things up. Trim with: skip Pujol (-$200), skip Cañada (-$60), more market lunches (-$100). Easily back to $2,500.</div>
+  </div>
+
+  <div class="card">
+    <h2>Quick conversion</h2>
+    <div class="muted" style="font-size: 13px; margin-bottom: 8px;">Approx · $1 USD ≈ 18 pesos (Apr 2026)</div>
+    <div class="exchange-card">
+      <div class="exchange-cell"><div class="num">100p</div><div class="lbl">≈ $5.50</div></div>
+      <div class="exchange-cell"><div class="num">500p</div><div class="lbl">≈ $28</div></div>
+      <div class="exchange-cell"><div class="num">1000p</div><div class="lbl">≈ $55</div></div>
+      <div class="exchange-cell"><div class="num">2000p</div><div class="lbl">≈ $110</div></div>
+    </div>
+    <div class="muted" style="font-size: 12px; margin-top: 8px;">When ATM asks if you accept the conversion rate — <strong style="color: var(--danger);">decline</strong>. Let your bank do it. Tip cabs ~10p, restaurants 10–15%, cowboys $5–10/pp.</div>
+  </div>
+</div>
+
+<!-- INFO VIEW -->
+<div class="view" id="view-info">
+  <div class="section-title">Quick links</div>
+  <a href="#" class="emergency-btn" onclick="showView('budget'); return false;">
+    <div class="ico">$</div>
+    <div class="info"><div class="label">Budget</div><div class="num">Spend tracker · $2,500 cap</div></div>
+  </a>
+
+  <div class="section-title">Emergency & key contacts</div>
+  <a class="emergency-btn" href="tel:911"><div class="ico" style="background: #FCEBEB; color: #A32D2D;">911</div><div class="info"><div class="label">Emergency (Mexico)</div><div class="num">Police, fire, ambulance</div></div></a>
+  <a class="emergency-btn" href="tel:+524151700359"><div class="ico">L</div><div class="info"><div class="label">Luciano (Casa Mel)</div><div class="num">+52 415 170 0359 · WhatsApp</div></div></a>
+  <a class="emergency-btn" href="tel:+528302379191"><div class="ico">Ly</div><div class="info"><div class="label">Lynn (host)</div><div class="num">+52 830-237-9191</div></div></a>
+  <a class="emergency-btn" href="tel:+524151547030"><div class="ico">🏠</div><div class="info"><div class="label">Casa Mel landline</div><div class="num">415-154-7030</div></div></a>
+  <a class="emergency-btn" href="tel:+5255-5080-2000"><div class="ico">🇺🇸</div><div class="info"><div class="label">U.S. Embassy CDMX</div><div class="num">+52 55 5080 2000</div></div></a>
+
+  <div class="section-title">SMA practical tips</div>
+  <div class="card">
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><strong>Cabs in SMA</strong> are about 100 pesos. Ask the driver first. Leave a small tip. Don't leave your phone in the cab.</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><strong>Cab to Casa Mel:</strong> "Next to Hotel Villa Santa Mónica, Parque Juárez."</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><strong>Luciano</strong> has a phone number for cabs if you need one.</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><strong>Avoid large purses & flashy jewelry.</strong> Don't hook your purse on the back of your chair — easily lifted.</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><strong>Weather May:</strong> Warm dry days (75–82°F), cool nights (50s). Bring a light jacket.</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><strong>Altitude:</strong> SMA 6,200ft, CDMX 7,350ft. Drink water, take it easy day 1.</span></div>
+  </div>
+
+  <div class="section-title">Money & phone</div>
+  <div class="card">
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext">Use a "no foreign exchange fee" ATM card. ATMs on the square exchange easily.</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext">When ATM asks "accept conversion rate?" → <strong style="color: var(--danger);">DECLINE</strong>. Let your bank convert.</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext">Turn off "roaming" on your phone to avoid data charges. Free WiFi is everywhere.</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext">Carry pesos for cabs, markets, tips. Cards work at most restaurants but not all.</span></div>
+  </div>
+
+  <div class="section-title">Date format</div>
+  <div class="card">
+    <div class="muted" style="font-size: 14px;">In Mexico, dates are written <strong style="color: var(--text);">day/month/year</strong>. So January 5 = <code style="background: var(--accent-soft); padding: 2px 6px; border-radius: 4px; color: var(--accent);">05/01</code>, not 01/05.</div>
+  </div>
+
+  <div class="section-title">Resources</div>
+  <div class="card">
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><a href="http://sanmigueldeallendeevents.com/" class="tel">San Miguel Events</a> — what's happening in town</span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><a href="https://discoversanmiguel.com/" class="tel">Discover San Miguel</a></span></div>
+    <div class="tip-row"><span class="bullet">→</span><span class="ctext"><a href="https://bajiogoshuttle.com" class="tel">BajioGo airport shuttle</a> — reliable, reasonably priced</span></div>
+  </div>
+</div>
+
+</div>
+
+<button class="notes-fab" onclick="openNotes()" title="Live notes">📝</button>
+
+<nav class="tab-bar">
+  <button class="tab active" onclick="showView('today')"><span class="icon">📍</span>Today</button>
+  <button class="tab" onclick="showView('days')"><span class="icon">📅</span>Days</button>
+  <button class="tab" onclick="showView('travel')"><span class="icon">✈️</span>Travel</button>
+  <button class="tab" onclick="showView('stays')"><span class="icon">🏠</span>Stays</button>
+  <button class="tab" onclick="showView('eat')"><span class="icon">🍽️</span>Eat</button>
+  <button class="tab" onclick="showView('bookings')"><span class="icon">✓</span>To-do</button>
+  <button class="tab" onclick="showView('info')"><span class="icon">ℹ️</span>Info</button>
+</nav>
+
+<script>
+// ================= DATA =================
+const TRIP_START = new Date('2026-05-02T00:00:00');
+
+const DAYS = [
+  {
+    n: 1, date: 'Sat May 2', title: 'Arrival → SMA',
+    headline: 'Land QRO 5:30 PM, drive to SMA, easy first night',
+    schedule: [
+      { time: '5:30 PM', name: 'Land at Querétaro (QRO)', desc: 'Delta DL1182 + AM2711 from AVL via ATL. Pick up Hertz at the airport.' },
+      { time: '6:00 PM', name: 'Drive to SMA', desc: 'About 1 hour. Highway 57 north, then Highway 51 to SMA. Easy drive in daylight.' },
+      { time: '7:30 PM', name: 'Settle into Casa Mel', desc: 'Gate code 1555ent (pedestrian) or 1723ent (car). Drop bags, change.' },
+      { time: '8:30 PM', name: 'Easy dinner', desc: 'La Sirena Gorda (steamed artichokes, ginger margaritas) or El Pegaso. Walk to Jardín after for the lit-up Parroquia.' },
+    ],
+    notes: 'Easy day. Don\'t over-plan. Tip the BajioGo driver $5/bag if you used them.',
+  },
+  {
+    n: 2, date: 'Sun May 3', title: 'Get oriented',
+    headline: 'Walking tour, Parroquia, El Charco hike, Sunday at Zandunga?',
+    schedule: [
+      { time: '8:30 AM', name: 'Coffee + pastry', desc: 'Lavanda Café or Ki\'Bok. Linger.' },
+      { time: '10:00 AM', name: 'Free walking tour from the Jardín', desc: 'Tip-based, ~$10/pp. Best way to learn the historic center fast.' },
+      { time: '12:30 PM', name: 'Lunch near Jardín', desc: 'Hosts recommend La Posadita rooftop (ask for a view of the church).' },
+      { time: '2:30 PM', name: 'El Charco del Ingenio', desc: '200-acre botanical garden + canyon walks. Easy 2–3 hr loop. Entry ~$5. Walkable from Centro or quick Uber.' },
+      { time: '7:00 PM', name: 'Dinner', desc: 'The Restaurant (Donnie Masterton, courtyard) or Trazo 1810 rooftop. Both are host favorites.' },
+    ],
+    alt: 'If Zandunga is open this Sunday (only on Sundays, often sells out), book ahead via zandunga@prodigy.net.mx. 1–5 PM, music + great food + countryside. Hire a cab both ways — no cell coverage there. This would replace the afternoon hike.',
+  },
+  {
+    n: 3, date: 'Mon May 4', title: 'Horseback ride day',
+    headline: 'Coyote Canyon ride + lunch + hot springs combo',
+    schedule: [
+      { time: '12:00 PM', name: 'Coyote Canyon Adventures', desc: 'Meet at Zacateros 56-A. Lunch first, then 4-hour ride through La Virgen river and the canyon. ~$135–155/pp. Book ahead at coyotecanyonadventures.com.' },
+      { time: '4:00 PM', name: 'Hot springs add-on', desc: 'Upgrade includes the local hot springs after the ride — knocks two priorities out in one day. Otherwise budget Wed for La Gruta.' },
+      { time: '7:30 PM', name: 'Casual dinner near Casa Mel', desc: 'You\'ll be tired. Andy\'s Taco Cart on Insurgentes 85 is the move — late, curbside, 40-year institution.' },
+    ],
+    alt: 'Alternative ranch: SoTeZ Horse Ranch — smaller, more personal. Joel (bilingual) runs calmer rides through the foothills. Better if you want intimacy over canyon adventure.',
+  },
+  {
+    n: 4, date: 'Tue May 5', title: 'Architecture, art, mezcal',
+    headline: 'Fábrica La Aurora, rooftop lunch, sunset at Luna, mezcal flight',
+    schedule: [
+      { time: '10:00 AM', name: 'Fábrica La Aurora', desc: 'Converted 1902 textile factory, now galleries + cafés. Free entry. 2–3 hours.' },
+      { time: '1:00 PM', name: 'Rooftop lunch', desc: 'Quince (slackliner!) or Atrio for close-up Parroquia views.' },
+      { time: '3:00 PM', name: 'Architecture wander', desc: 'Templo de San Francisco, Oratorio de San Felipe Neri, Casa de Allende museum (~$5).' },
+      { time: '6:00 PM', name: 'Sunset at La Luna', desc: 'Rosewood rooftop. Hosts call this the best view in San Miguel. Get there early.' },
+      { time: '8:00 PM', name: 'Dinner + mezcal', desc: 'San Mezcal (Recreo 88) — small, creative cocktails, vast mezcal collection, excellent tapas. Or Tostévere for tapas.' },
+    ],
+  },
+  {
+    n: 5, date: 'Wed May 6', title: 'Hot springs + sanctuary',
+    headline: 'La Gruta morning, Atotonilco, Nirvana lunch',
+    schedule: [
+      { time: '8:00 AM', name: 'Drive to La Gruta', desc: '20 min north. Closed Mon–Tue, so today is the first available. Entry ~$15/pp. Multiple pools, the cave-with-waterfall is iconic. Go early — gets crowded.' },
+      { time: '12:00 PM', name: 'Lunch at Nirvana', desc: '5 min drive — riverside, tranquil, hosts recommend it. 25-min cab ride from town typically; you\'ll have the car.' },
+      { time: '2:30 PM', name: 'Santuario de Atotonilco', desc: '10 min away. UNESCO site, 18th-century murals, "Sistine Chapel of Mexico." Free entry. ~1 hour.' },
+      { time: '7:00 PM', name: 'Easy dinner back in town', desc: 'El Manantial (ginger margaritas, artichokes) or El Correo (traditional, host favorite for tortilla soup).' },
+    ],
+    alt: 'If you did the hot springs combo on Mon, swap this day for Guanajuato City (1.5 hrs each way, gorgeous colorful colonial city — funicular, kissing alley, callejoneadas), or for Santísima Trinidad vineyard (hosts\' favorite — outdoor lakeside dining, lavender fields, Tuscany vibes, Fri–Sun only so check).',
+  },
+  {
+    n: 6, date: 'Thu May 7', title: 'Cooking class OR pyramids',
+    headline: 'Pick your adventure — leave space for the SMA you didn\'t know you wanted',
+    schedule: [
+      { time: 'Morning', name: 'Option A: Cooking class', desc: 'Chef Paco at El Petit Four (Jesús 2) — host-recommended, "guaranteed a great time." Or Sazón / Mexico Cooks for half-day classes. ~$80–110/pp. Eat your work for lunch.' },
+      { time: 'Morning', name: 'Option B: Cañada de la Virgen', desc: 'Pre-Hispanic pyramids 30 min from SMA, less crowded than Teotihuacán. Guided tours required (~$15/pp + $5 entry). Honest take: skip if you\'re going to Teotihuacán later.' },
+      { time: 'Morning', name: 'Option C: Vineyard lunch', desc: 'Tarragón (Hacienda San José Lavista) "field to table" or Terruño (Tres Raíces) for smoked chicken — both 30 min, both host-recommended.' },
+      { time: '8:00 PM', name: 'Splurge dinner', desc: 'Áperi at Dos Casas (~$80/pp) or Áurea at L\'Otel (~$60/pp). Or hit a host favorite: Tunki by Handshake (Casa de Sierra Nevada rooftop with possibly the best church view in town).' },
+    ],
+    notes: 'If you\'re tired and the SMA streets are working their magic, just wander. Casa Mel\'s neighborhood is gorgeous at golden hour.',
+  },
+  {
+    n: 7, date: 'Fri May 8', title: 'SMA → Bernal → CDMX',
+    headline: 'Drive day with a hike at the monolith and lunch in town',
+    schedule: [
+      { time: '9:00 AM', name: 'Leave SMA', desc: 'Pack the night before. Settle up with Luciano. Highway 57 south.' },
+      { time: '10:45 AM', name: 'Arrive Peña de Bernal', desc: '1h 45m from SMA. Park at base of town.' },
+      { time: '11:00 AM', name: 'Hike the Peña', desc: 'Trail goes ~2/3 up the monolith to a chapel and viewpoint. ~1.5 hrs round trip, moderate, some scrambling. Bring water.' },
+      { time: '1:00 PM', name: 'Lunch in Bernal', desc: 'Try the famous black gorditas (huitlacoche-blackened masa). Mesón de la Roca or Tierracielo (best view back at the rock).' },
+      { time: '2:30 PM', name: 'Continue to CDMX', desc: '~3 hours from Bernal to Condesa. Aim to arrive 6:30–7:00 PM (avoid CDMX traffic 5–6 PM).' },
+      { time: '5:30 PM', name: 'Hertz return at MEX', desc: 'Drop the car at MEX airport. Then Uber to Condesa apartment (~$18, 30 min).' },
+      { time: '7:00 PM', name: 'Settle in & easy dinner', desc: 'AMS250 front door code 2580. WiFi: Totalplay / @Usche08. Walk to Lardo (Mediterranean, walk-in, host pick), Café Ragu (simple Italian, host pick), or Mendl (host pick — Jewish deli).' },
+    ],
+    alt: 'TBD: Bernal vs. Tula (Toltec ruins, less famous, less crowded) — Stephen researching.',
+  },
+  {
+    n: 8, date: 'Sat May 9', title: 'CDMX: Centro + Contramar',
+    headline: 'Zócalo, Templo Mayor, Bellas Artes, sunset at Torre, dinner at Contramar',
+    schedule: [
+      { time: '10:00 AM', name: 'Uber to Zócalo', desc: '~$5. Catedral Metropolitana, Palacio Nacional (Diego Rivera murals — free with ID, opens 10 AM), Templo Mayor + museum (~$5).' },
+      { time: '1:30 PM', name: 'Lunch at Azul Histórico', desc: 'Colonial courtyard near Zócalo. Chef Ricardo Muñoz Zurita does classic regional Mexican. ~$35/pp.' },
+      { time: '3:30 PM', name: 'Palacio de Bellas Artes', desc: 'Tiffany glass curtain, more murals. Entry ~$4. Walk Madero (pedestrian) to/from.' },
+      { time: '6:00 PM', name: 'Sunset at Torre Latinoamericana', desc: 'Hosts\' tip: Miralto bar at the top, just before sunset for the day-into-night view. Female travelers: the ladies\' room has a glass-wall stall with a view!' },
+      { time: '8:30 PM', name: 'Dinner at Contramar', desc: 'BOOK 2–3 WEEKS AHEAD via OpenTable. Tuna tostadas + red-and-green fish are essential. Iconic. ~$60/pp with wine.' },
+    ],
+    notes: 'Casa Azul Condesa is a great late stop on the way home if you have steam left.',
+  },
+  {
+    n: 9, date: 'Sun May 10', title: 'Coyoacán + Frida',
+    headline: 'Locked in: Frida 2:30 PM. Plan everything around it.',
+    schedule: [
+      { time: '11:00 AM', name: 'Uber to Coyoacán', desc: '~$8, 30 min. Sunday traffic is real — leave early, get there relaxed.' },
+      { time: '11:30 AM', name: 'Mercado de Coyoacán + Jardín Hidalgo', desc: 'Tostadas (the seafood ones are outstanding), then wander the artisan stalls. Parroquia de San Juan Bautista on the plaza.' },
+      { time: '2:00 PM', name: 'Walk to Casa Azul', desc: '10 min from the market. Be there by 2:25 PM — they are STRICT on the 2:30 entry window.' },
+      { time: '2:30 PM', name: 'Frida Kahlo Museum', desc: 'Order R111412898. Allow 1.5–2 hrs. Garden, blue walls, her wheelchair at the easel.' },
+      { time: '4:30 PM', name: 'Uber to Anahuacalli', desc: '~$5, 15 min. Diego Rivera\'s pre-Hispanic art collection in his volcanic-stone pyramid building. Closes 5:30 PM — go straight there.' },
+      { time: '7:30 PM', name: 'Dinner back in Condesa', desc: 'Lindy (host pick, all-day comfort food overlooking Parque México), Oly, or Koku — all host favorites you haven\'t tried.' },
+    ],
+    alert: 'CRITICAL: Frida entry is 2:30–2:45 PM. If you\'re late, they may not let you in. Be there by 2:25.',
+  },
+  {
+    n: 10, date: 'Mon May 11', title: 'Chapultepec + splurge',
+    headline: 'Anthropology Museum (don\'t skip), then your big dinner',
+    schedule: [
+      { time: '10:00 AM', name: 'Museo Nacional de Antropología', desc: '~$5. Allow 3 hours minimum. One of the world\'s great museums — Aztec sun stone, Maya/Olmec halls.' },
+      { time: '1:30 PM', name: 'Lunch in Polanco', desc: 'Quintonil tasting (~$120/pp) if you can book it, or San Ángel Inn (40 min Uber but hosts say worth the ride).' },
+      { time: '3:30 PM', name: 'Bosque de Chapultepec', desc: 'Castillo de Chapultepec for panoramic views (~$5), or Museo Soumaya (free, silver-paneled building, Carlos Slim\'s collection).' },
+      { time: '8:00 PM', name: 'Splurge dinner: Pujol', desc: 'Book MONTHS ahead — try OpenTable cancellation queue daily. Taco omakase at the bar ~$140/pp; full tasting ~$220/pp. If impossible: Bistro Máximos (host pick), Rosetta, or Anonimo (host pick).' },
+    ],
+    alt: 'OPTIONAL CDMX SWAP: Cooking class at Nido (around the corner from your apartment, host recommended) instead of the museum morning. Pair with a lighter afternoon and earlier dinner.',
+  },
+  {
+    n: 11, date: 'Tue May 12', title: 'Goodbye CDMX',
+    headline: 'Brunch, last walk, MEX 3:45 PM departure',
+    schedule: [
+      { time: '8:30 AM', name: 'Brunch', desc: 'Panadería Rosetta (guava roll + ricotta toast, cash only, lines move fast). Or Chilpa (host pick for breakfast) or Fritur for Belgian waffles (host pick).' },
+      { time: '10:30 AM', name: 'Last walk', desc: 'Loop Parque México. Buy a small piece at one of the design shops on Av. Amsterdam.' },
+      { time: '12:30 PM', name: 'Uber to MEX', desc: 'Allow 2.5 hr buffer for traffic + international check-in.' },
+      { time: '3:45 PM', name: 'Delta DL0599 to ATL', desc: 'Then DL3071 ATL → AVL. Land 11:39 PM.' },
+    ],
+  },
+];
+
+// ================= EAT & DRINK DATA =================
+// Each entry has lat/lng for Maps deep-links (resilient to street name/address changes)
+// + opentable URL where bookable (most SMA + CDMX restaurants are on OpenTable)
+const EAT = [
+  // SMA — host picks
+  { city: 'sma', host: true, name: 'Trazo 1810', cat: 'Rooftop dinner', desc: 'Elegant rooftop bar and restaurant, tremendous views. One of the best restaurants in town per hosts.', area: 'Hidalgo 8', tel: '+524151213506', lat: 20.9150976, lng: -100.7443972, ot: 'https://www.opentable.com/r/trazo-1810-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'Atrio', cat: 'Rooftop dinner', desc: 'Trendy rooftop, amazing close-up Parroquia views. Great for special dinners.', area: 'Cuna de Allende 3', tel: '+524156881405', lat: 20.9135583, lng: -100.7441417, ot: 'https://www.opentable.com/r/atrio-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'La Posadita', cat: 'Rooftop Mexican', desc: 'Excellent Mexican food. Ask for a table with church view. Reservations recommended.', area: 'Cuna de Allende 13', tel: '+524151548862', lat: 20.9130894, lng: -100.7440236 },
+  { city: 'sma', host: true, name: 'Tunki by Handshake', cat: 'Rooftop bar', desc: 'Casa de Sierra Nevada rooftop. Possibly the best church view in all of San Miguel. Pricey small plates.', area: 'Hospicio 35', tel: '+524151527040', lat: 20.9127115, lng: -100.742312 },
+  { city: 'sma', host: true, name: 'Rosewood La Luna', cat: 'Rooftop sunset', desc: 'BEST view in San Miguel per hosts. Get there early for sunset. Sunday brunch is amazing.', area: 'Nemesio Diez 11', tel: '+524151529700', lat: 20.9095046, lng: -100.7449356 },
+  { city: 'sma', host: true, name: 'Casa Nostra', cat: 'Rooftop dinner', desc: 'Marco the owner is a character. Personal service, great views. Host favorite for special dinners.', area: 'Terraplén 8', tel: '+524151102202', lat: 20.9111062, lng: -100.7424339, ot: 'https://www.opentable.com/r/casa-nostra-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'Mi Bistro 300', cat: 'All-day favorite', desc: 'Host favorite. Diverse menu, excellent presentation, has parking. Sister to Fuego y Agua.', area: 'Quebrada 18d', tel: '+524151217979', lat: 20.9157121, lng: -100.7462758 },
+  { city: 'sma', host: true, name: 'The Restaurant', cat: 'Bistro dinner', desc: 'Donnie Masterton\'s historic spot, courtyard setting, varied menu. Thursday is hamburger night.', area: 'Sollano 16', tel: '+524151547877', lat: 20.9129716, lng: -100.7427424 },
+  { city: 'sma', host: true, name: 'Andy\'s Taco Cart', cat: 'Street food', desc: '40+ year institution. Great street tacos. Go late, grab a curb, have a seat. Opens 7:30 PM.', area: 'Insurgentes 85', tel: '', lat: 20.9166858, lng: -100.7440804 },
+  { city: 'sma', host: true, name: 'La Sirena Gorda', cat: 'Casual seafood', desc: 'Steamed artichokes, super tostadas, ginger margaritas. Hosts love it.', area: 'Umarán 8', tel: '+524151525019', lat: 20.9139221, lng: -100.7444674, ot: 'https://www.opentable.com/r/la-sirena-gorda-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'El Manantial', cat: 'Bar + seafood', desc: 'Quirky bar. Famous for ginger margaritas, steamed artichokes, seafood tostadas.', area: 'Barranca 78', tel: '+524151100007', lat: 20.91125, lng: -100.740448 },
+  { city: 'sma', host: true, name: 'San Mezcal', cat: 'Mezcalería', desc: 'Small bar, creative cocktails, vast mezcal collection. Excellent tapas. Closed Tue.', area: 'Recreo 88', tel: '+524151211422', lat: 20.9098804, lng: -100.741775 },
+  { city: 'sma', host: true, name: 'El Pegaso', cat: 'All-day classic', desc: 'Long-time standard. Mexican + international. Inside or rooftop. Closed Wed.', area: 'Corregidora 6', tel: '+524151547611', lat: 20.9140889, lng: -100.7421528 },
+  { city: 'sma', host: true, name: 'El Correo', cat: 'Traditional Mexican', desc: 'Great breakfasts. Excellent tortilla soup. Host favorite. Closed Tue.', area: 'Correo 21', tel: '+524151524951', lat: 20.9139648, lng: -100.7424305 },
+  { city: 'sma', host: true, name: 'Tostévere', cat: 'Tapas', desc: 'Small, eclectic, creative tapas. Reservations recommended.', area: 'Codo 4', tel: '+524151213075', lat: 20.9115344, lng: -100.7458169, ot: 'https://www.opentable.com/r/tostevere-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'Quince', cat: 'Rooftop lunch', desc: 'Contemporary trendy rooftop, great views, slackliner!', area: 'Cuna de Allende 15', tel: '+524151549776', lat: 20.9129581, lng: -100.7439848, ot: 'https://www.opentable.com/r/quince-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'Los Milagros Terraza', cat: 'Mexican classic', desc: 'Great view next to El Mirador. Order a Molcajete Especial volcano bowl. Closed Mon.', area: 'Salida Real a Querétaro 91', tel: '+524151501035', lat: 20.9089503, lng: -100.7388654 },
+  { city: 'sma', host: true, name: 'Inside Café', cat: 'Brunch', desc: 'Cozy + rooftop terrace. Asian-influenced, daily brunch, famous grilled cheese.', area: 'Insurgentes 66', tel: '+524151523999', lat: 20.9165054, lng: -100.7434045 },
+  { city: 'sma', host: true, name: 'Café Rama', cat: 'Bohemian eatery', desc: 'Eclectic art-gallery vibe, live music most nights, local + global menu.', area: 'Nemesio Diez 7', tel: '+524151549655', lat: 20.9101605, lng: -100.745976 },
+  { city: 'sma', host: true, name: 'Mercado Sano', cat: 'Organic market', desc: 'Natural foods. Great for Saturday breakfast, live music Saturdays.', area: 'Ancha de San Antonio 123', tel: '', lat: 20.9064137, lng: -100.7483436 },
+  { city: 'sma', host: true, name: 'Mercado Ignacio Ramírez', cat: 'Traditional market', desc: 'Local market — flowers, produce, food stands, artisan shops.', area: 'Colegio y Homobono', tel: '+524151544011', lat: 20.9165012, lng: -100.7412703 },
+  { city: 'sma', host: true, name: 'El Petit Four', cat: 'Bakery + cooking class', desc: 'Cakes, pastries, breakfast. Take Chef Paco\'s cooking class — guaranteed great time per hosts. Cash only.', area: 'Jesús 2', tel: '+524151544010', lat: 20.9135727, lng: -100.7445169 },
+  { city: 'sma', host: true, name: 'Villa Santa Mónica', cat: 'Hotel breakfast', desc: 'Quaint boutique hotel right by Casa Mel. Beautiful grounds, peacocks. Order guacamole delivered to Casa Mel!', area: 'Baeza 22', tel: '+524151520451', lat: 20.907804, lng: -100.7421008 },
+  { city: 'sma', host: true, name: 'Zandunga', cat: 'Sunday music', desc: 'Sundays only (1–5 PM, not all Sundays). Outside venue, virtuoso guitarist Gil Gutierrez. Email zandunga@prodigy.net.mx for tickets.', area: 'On the road to Jalpa', tel: '', lat: 20.95, lng: -100.7 },
+  { city: 'sma', host: true, name: 'Santísima Trinidad', cat: 'Vineyard', desc: 'Hosts\' favorite thing to do. 30 min from SMA near Dolores Hidalgo. Outdoor lakeside dining, lavender fields, Tuscany vibes. Fri–Sun + holidays.', area: 'Carretera SMA–Dolores KM 81', tel: '+524181203089', lat: 21.05, lng: -100.85 },
+  { city: 'sma', host: true, name: 'Tarragón (Hacienda San José Lavista)', cat: 'Vineyard', desc: 'Open-air "field to table" at impressive vineyard. Thu–Sun.', area: 'KM 10.2 Nuevo Libramiento SMA', tel: '+524151264595', lat: 20.9440982, lng: -100.8161996 },
+  { city: 'sma', host: true, name: 'Terruño (Tres Raíces)', cat: 'Vineyard', desc: 'Trendy vineyard hotel + restaurant 30 min from SMA. Famous for weekend smoked chicken. Reserve. Closed Tue.', area: 'KM 73 Carretera SMA–Dolores', tel: '+524151135250', lat: 21.0849491, lng: -100.8008309, ot: 'https://www.opentable.com/r/terruno-tres-raices' },
+  { city: 'sma', host: true, name: 'Nirvana', cat: 'Boutique hotel + restaurant', desc: '25 min cab from town. Tranquil grounds, good food. Great post-La-Gruta lunch (it\'s nearby).', area: 'Camino Antigua Via del Ferrocarril 21, Cortijo', tel: '+524151852194', lat: 20.9944355, lng: -100.7972488 },
+  { city: 'sma', host: true, name: 'Prime Steak Club', cat: 'Special occasion', desc: 'Beautifully appointed, upscale, valet parking. Next to Live Aqua hotel.', area: 'Calzada de la Presa 85 C', tel: '+524156887086', lat: 20.9208646, lng: -100.738857, ot: 'https://www.opentable.com/r/prime-steak-club-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'Hotel Matilda — Moxi', cat: 'Hotel restaurant', desc: 'Chic upscale boutique. Excellent restaurant, trendy bar, quality spa.', area: 'Aldama 53', tel: '+524151521015', lat: 20.9105171, lng: -100.7436731, ot: 'https://www.opentable.com/r/moxi-restaurant-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'Fátima 7', cat: 'Rooftop Mediterranean', desc: 'Above Casa Blanca hotel. Spectacular views of San Francisco temple.', area: 'Juárez 7', tel: '+524151404431', lat: 20.914791, lng: -100.7418394, ot: 'https://www.opentable.com/r/fatima-7-rooftop-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'San Agustín', cat: 'Churros + chocolate', desc: 'Famous for churros. Expect to wait during busy times.', area: 'San Francisco 21', tel: '+524151525795', lat: 20.9144374, lng: -100.7421214 },
+  { city: 'sma', host: true, name: 'Bocaciega', cat: 'Greek', desc: 'Excellent and trendy Greek restaurant.', area: 'Quebrada 18A', tel: '+524151777175', lat: 20.9158123, lng: -100.7464863, ot: 'https://www.opentable.com/r/bocaciega-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'Berlin', cat: 'German bar + bistro', desc: 'German + international. Popular bar. Reservations recommended. Closed Sun.', area: 'Umarán 19', tel: '+524151549432', lat: 20.9140354, lng: -100.7455638 },
+  { city: 'sma', host: true, name: 'Cent\'anni Trattoria', cat: 'Italian rooftop', desc: 'Bar and rooftop Italian. Live music.', area: 'Canal 34', tel: '+524151548044', lat: 20.9143487, lng: -100.7455355, ot: 'https://www.opentable.com/r/centanni-trattoria-san-miguel-de-allende' },
+  { city: 'sma', host: true, name: 'Trattoria Romana', cat: 'Italian casual', desc: 'Casual Italian, surprisingly consistent.', area: 'Codo 9', tel: '+524151523790', lat: 20.9110928, lng: -100.7463173 },
+
+  // CDMX — host picks
+  { city: 'cdmx', host: true, name: 'Contramar', cat: 'Iconic seafood lunch', desc: 'Hosts pick. Tuna tostadas + red-and-green fish are essential. Book 2–3 weeks ahead.', area: 'Durango 200, Roma Norte', tel: '+525555149217', lat: 19.4195793, lng: -99.1671526, ot: 'https://www.opentable.com/contramar-reservations-mexico-city' },
+  { city: 'cdmx', host: true, name: 'Bistro Máximos (Máximo Bistrot)', cat: 'Modern Mexican', desc: 'Hosts say "if you can get a reservation." Great alternative to Pujol.', area: 'Roma Norte', tel: '', lat: 19.4179, lng: -99.1623, ot: 'https://www.opentable.com/maximo-bistrot' },
+  { city: 'cdmx', host: true, name: 'Lindy', cat: 'All-day comfort', desc: 'New host pick. Airy, homey. Comfort food with a fine-dining edge, overlooks Parque México.', area: 'Av. México 31, Condesa', tel: '+525560957726', lat: 19.413632, lng: -99.1697617 },
+  { city: 'cdmx', host: true, name: 'oly.', cat: 'Mediterranean', desc: 'Host pick — new to them and great. Cozy Mediterranean, indoor + terrace seating in Hipódromo. Closed Mon.', area: 'Alfonso Reyes 120, Hipódromo Condesa', tel: '+525591030034', lat: 19.4091587, lng: -99.1772033 },
+  { city: 'cdmx', host: true, name: 'Koku', cat: 'Japanese', desc: 'Host pick — new to them and great. Japanese, sushi, ramen, pad thai. Open late.', area: 'Iztaccihuatl 54, Condesa', tel: '+525521210925', lat: 19.4102567, lng: -99.1693362 },
+  { city: 'cdmx', host: true, name: 'Nido Taller Culinario', cat: 'Cooking school + restaurant', desc: 'Around the corner from AMS250. Host recommendation for a cooking class. Closed Mon.', area: 'Av Sonora 189, Hipódromo', tel: '+525559779375', lat: 19.4129016, lng: -99.1678112 },
+  { city: 'cdmx', host: true, name: 'Mendl Delicatessen', cat: 'Jewish deli', desc: 'Host pick. Big sandwiches, in-house bread, beautiful plant-filled space.', area: 'Citlaltépetl 9, Hipódromo', tel: '+525593479944', lat: 19.4101464, lng: -99.1713147 },
+  { city: 'cdmx', host: true, name: 'Maza Bistrot', cat: 'Indian + French', desc: 'Host pick. Authentic Indian + French in Juárez. Closed Tue.', area: 'C. Dinamarca 47B, Juárez', tel: '+525559257841', lat: 19.4276873, lng: -99.1591212 },
+  { city: 'cdmx', host: true, name: 'Café Ragú', cat: 'Simple Italian', desc: 'Host pick — simple Italian right by Parque México. Closed Mon.', area: 'Av México 157, Condesa', tel: '+525555646810', lat: 19.4118543, lng: -99.1682765 },
+  { city: 'cdmx', host: true, name: 'Azul Condesa', cat: 'Regional Mexican', desc: 'Host pick. Chef Ricardo Muñoz Zurita\'s flagship. Hand-made tortillas, mole, candlelit setting.', area: 'Av. Nuevo León 68, Hipódromo', tel: '+525552866380', lat: 19.412863, lng: -99.171488, ot: 'https://www.opentable.com/azul-condesa' },
+  { city: 'cdmx', host: true, name: 'Anónimo', cat: 'Italian / pizza', desc: 'Host pick. Cozy corner spot, great pizza, lemon pasta, Caesar salad. Reservations recommended.', area: 'C. Atlixco 105, Hipódromo Condesa', tel: '', lat: 19.4112339, lng: -99.1755213 },
+  { city: 'cdmx', host: true, name: 'La Capital', cat: 'Mexican', desc: 'Host pick. Beautiful plating, great cocktails, cochinita pibil. Closed Mon.', area: 'Av. Nuevo León 137, Condesa', tel: '+525526533887', lat: 19.4094444, lng: -99.1728167 },
+  { city: 'cdmx', host: true, name: 'Chilpa', cat: 'Breakfast', desc: 'Host pick. Build-your-own chilaquiles, fresh juices, intimate street-canopy setting.', area: 'C. Chilpancingo 35, Condesa', tel: '+525552644976', lat: 19.408458, lng: -99.1700072 },
+  { city: 'cdmx', host: true, name: 'FRITUUR', cat: 'Belgian waffles + brunch', desc: 'Host pick. Cute Belgian-leaning brunch spot, good beer.', area: 'Campeche 276, Hipódromo', tel: '+525574077968', lat: 19.4084043, lng: -99.1704011 },
+  { city: 'cdmx', host: true, name: 'Taquería Orinoco', cat: 'Tacos', desc: 'Host pick. Famous late-night taqueria. Order Norteña or Campechana for the upgrade. Open till 3:30 AM.', area: 'Av. Yucatán 3, Hipódromo', tel: '+525581903153', lat: 19.416402, lng: -99.1672778 },
+  { city: 'cdmx', host: true, name: 'Butcher & Sons', cat: 'Burgers', desc: 'Host pick — good burgers. Wagyu cross + truffle parm fries.', area: 'Teotihuacan 14, Condesa', tel: '+525593887218', lat: 19.4117978, lng: -99.1677896 },
+  { city: 'cdmx', host: true, name: 'El Jamil', cat: 'Lebanese', desc: 'Host pick. Authentic Lebanese, gorgeous tree-lined patio.', area: 'Ámsterdam 306, Hipódromo', tel: '+525555649486', lat: 19.4141803, lng: -99.1669553 },
+  { city: 'cdmx', host: true, name: 'Milo\'s', cat: 'Euro-Mexican all-day', desc: 'Host pick. Refreshing healthy menu, farm-sourced. Special occasion vibe.', area: 'Amsterdam & Celaya, Hipódromo Condesa', tel: '+525555648712', lat: 19.4143509, lng: -99.166924 },
+  { city: 'cdmx', host: true, name: 'La Naval', cat: 'Wine + gourmet + tapas', desc: 'Host pick. Wine/liquor store + adjacent tapas restaurant. BYO wine from store with corkage.', area: 'Av. Insurgentes Sur 373, Hipódromo', tel: '+525555843144', lat: 19.4104782, lng: -99.1672561 },
+  { city: 'cdmx', host: true, name: 'Dulce Condesa', cat: 'Pastries + coffee', desc: 'Host pick — nearby AMS250. Croissants, guava pastry, friendly owner.', area: 'Ámsterdam 259, Condesa', tel: '+525522122926', lat: 19.4116336, lng: -99.167455 },
+  { city: 'cdmx', host: true, name: 'ODETTE Condesa', cat: 'Pastries', desc: 'Host pick. Best raspberry kouign-amann, croissant Ferrero, by Parque México.', area: 'Pl. Popocatépetl 35, Hipódromo', tel: '+525590399028', lat: 19.4151766, lng: -99.1677824 },
+  { city: 'cdmx', host: true, name: 'San Ángel Inn', cat: 'Special lunch', desc: '40 min Uber but hosts say worth the ride. Historic hacienda restaurant, magical garden setting.', area: 'Diego Rivera 50, San Ángel', tel: '+525556161402', lat: 19.349205, lng: -99.1980227 },
+  { city: 'cdmx', host: true, name: 'Torre Latinoamericana — Miralto', cat: 'Sunset bar', desc: 'Host tip: arrive just before sunset. Drinks at Miralto bar at the top. Female travelers — ladies\' room cubicle has a glass-wall view!', area: 'Eje Central Lázaro Cárdenas 2, Centro', tel: '+525555187423', lat: 19.4339414, lng: -99.1406381 },
+  { city: 'cdmx', host: true, name: 'Casa de los Azulejos', cat: 'Historic / Sanborns', desc: 'Historic House of Tiles building downtown. Sanborns inside. Worth a peek for the architecture.', area: 'Av Madero 4, Centro', tel: '+525555121331', lat: 19.4342214, lng: -99.1401815 },
+  { city: 'cdmx', host: true, name: 'Lardo', cat: 'Mediterranean / brunch', desc: 'Host pick. Hands-down best breakfast in Condesa. Walk-in. Long waits but worth it.', area: 'Agustín Melgar 6, Condesa', tel: '+525552117731', lat: 19.4179589, lng: -99.1752268 },
+
+  // Our additions (non-host)
+  { city: 'cdmx', host: false, name: 'Pujol', cat: 'World-50-best splurge', desc: 'Book MONTHS ahead. Taco omakase at the bar ~$140/pp; tasting ~$220/pp. Try OpenTable cancellation queue daily. Closed Sun.', area: 'Tennyson 133, Polanco', tel: '+525555454111', lat: 19.4323763, lng: -99.1948132 },
+  { city: 'cdmx', host: false, name: 'Quintonil', cat: 'World-50-best', desc: 'Across from Pujol. Lunch tasting easier to book than dinner. Closed Sun.', area: 'Av. Isaac Newton 55, Polanco', tel: '+525552800254', lat: 19.4308408, lng: -99.1917115 },
+  { city: 'cdmx', host: false, name: 'Restaurante Rosetta', cat: 'Italian-Mexican fine dining', desc: 'Sit-down Michelin-starred dinner. Book weeks ahead. Closed Sun.', area: 'Colima 166, Roma Nte', tel: '+525555337804', lat: 19.4197758, lng: -99.1598009, ot: 'https://www.opentable.com/r/rosetta-mexico-city' },
+  { city: 'cdmx', host: false, name: 'Panadería Rosetta', cat: 'Pastry / brunch', desc: 'The bakery is the move. Guava roll, ricotta toast, dulce de leche bun. Lines move fast.', area: 'Colima 179, Roma Nte', tel: '+525552072976', lat: 19.4198883, lng: -99.1605402 },
+  { city: 'cdmx', host: false, name: 'Azul Histórico', cat: 'Regional Mexican lunch', desc: 'Chef Ricardo Muñoz Zurita. Colonial courtyard. Perfect Centro lunch stop.', area: 'Isabel La Católica 30, Centro', tel: '+525555101316', lat: 19.4328194, lng: -99.1360166, ot: 'https://www.opentable.com/azul-historico' },
+  { city: 'cdmx', host: false, name: 'Mercado de Coyoacán', cat: 'Market food', desc: 'Tostadas (the seafood ones especially), churros, classic market vibe. Pair with Frida visit.', area: 'Ignacio Allende, Coyoacán', tel: '+525611248845', lat: 19.3528679, lng: -99.1620664 },
+  { city: 'cdmx', host: false, name: 'Templo Mayor', cat: 'Aztec ruins + museum', desc: 'Aztec capital\'s main ceremonial site beneath modern CDMX. ~$10 entry. Closed Mon.', area: 'Seminario 8, Centro', tel: '+525540405600', lat: 19.4346038, lng: -99.131881 },
+  { city: 'cdmx', host: false, name: 'Palacio de Bellas Artes', cat: 'Museum + architecture', desc: 'Tiffany glass curtain, Diego Rivera murals. ~$5 entry. Closed Mon.', area: 'Av. Juárez, Centro', tel: '+525286476500', lat: 19.4352, lng: -99.1412 },
+  { city: 'cdmx', host: false, name: 'Museo Nacional de Antropología', cat: 'World-class museum', desc: 'Aztec sun stone, Maya/Olmec halls. Allow 3 hrs minimum. ~$10 entry. Closed Mon.', area: 'Av. Reforma, Chapultepec', tel: '+525555536332', lat: 19.4260032, lng: -99.1862786 },
+
+  // SMA places (non-restaurant) for the Map button
+  { city: 'sma', host: false, name: 'El Charco del Ingenio', cat: 'Botanical garden', desc: '200 acres, easy 2–3hr loops with canyon views. Entry ~$5. Walkable from Centro or quick Uber.', area: 'Las Colonias', tel: '+524151038090', lat: 20.9178515, lng: -100.7279452 },
+  { city: 'sma', host: false, name: 'Fábrica La Aurora', cat: 'Art + design center', desc: 'Converted 1902 textile factory, now galleries + cafés. Free entry. 2–3 hours.', area: 'Calz de La Aurora', tel: '+524151521312', lat: 20.9233049, lng: -100.7403281 },
+  { city: 'sma', host: false, name: 'Santuario de Atotonilco', cat: 'UNESCO sanctuary', desc: '"Sistine Chapel of Mexico." 18th-c murals. Free entry. ~1 hour. Pair with La Gruta.', area: 'Santuario de Atotonilco', tel: '', lat: 21.0048755, lng: -100.7943289 },
+  { city: 'sma', host: false, name: 'La Gruta Spa', cat: 'Hot springs', desc: 'Multiple pools + iconic cave-with-waterfall. Entry ~$15. Closed Mon–Tue. Go early.', area: 'Carretera a Dolores Hidalgo km 10', tel: '+524151852162', lat: 21.0006313, lng: -100.7896194 },
+  { city: 'sma', host: false, name: 'Coyote Canyon Adventures', cat: 'Horseback meet point', desc: 'Half-day Coyote Canyon ride: 4hrs riding, organic ranch lunch, ~$135–155/pp. Ride+hot springs combo available.', area: 'Zacateros 56-A', tel: '+524151544193', lat: 20.9112368, lng: -100.7463118 },
+  { city: 'sma', host: false, name: 'Parroquia de San Miguel Arcángel', cat: 'The pink church', desc: 'The icon. Closed Sun for tourism. Lit up beautifully at night.', area: 'Jardín Principal', tel: '+524151520544', lat: 20.9135824, lng: -100.7437914 },
+
+  // CDMX day-trip + key places
+  { city: 'cdmx', host: false, name: 'Frida Kahlo Museum (Casa Azul)', cat: 'YOUR booked entry 2:30 PM May 10', desc: 'Order R111412898. Be there by 2:25 PM — STRICT entry window.', area: 'Londres 247, Coyoacán', tel: '+525555545999', lat: 19.3551806, lng: -99.1624636 },
+
+  // Drive-day
+  { city: 'sma', host: false, name: 'Peña de Bernal', cat: 'May 8 hike stop', desc: '1h 45m from SMA. Hike 2/3 up to chapel viewpoint, ~1.5hrs RT. Lunch in town — black gorditas.', area: 'Bernal, Querétaro', tel: '', lat: 20.7408855, lng: -99.9412038 },
+];
+
+// ================= TODO LISTS =================
+const TODOS = [
+  { id: 'pujol', text: 'Try to book Pujol or Bistro Máximos for May 11', meta: 'Tock or OpenTable. Cancellations open daily.' },
+  { id: 'contramar', text: 'Book Contramar for May 9 dinner', meta: 'OpenTable. Need 2–3 weeks notice.' },
+  { id: 'horseback', text: 'Book Coyote Canyon Adventures for May 4', meta: 'coyotecanyonadventures.com or +52 415 154 4193. Choose ride+hot springs combo.' },
+  { id: 'cooking', text: 'Decide and book: cooking class (SMA Thu OR CDMX Mon at Nido)', meta: 'El Petit Four / Sazón / Mexico Cooks (SMA) or Nido (CDMX, host rec).' },
+  { id: 'sierra', text: 'Final call on Sierra Gorda vs Bernal for May 8', meta: 'Plan currently uses Bernal — still flexible.' },
+  { id: 'bernal-tula', text: 'Decide Bernal vs Tula for the drive-day stop', meta: 'Stephen researching.' },
+  { id: 'zandunga', text: 'Check if Zandunga is open Sun May 3 + email for tickets', meta: 'zandunga@prodigy.net.mx — sells out in high season.' },
+];
+
+const PREP = [
+  { id: 'hertz', text: 'Confirm Hertz return at MEX May 8 + Uber plan to Condesa', meta: 'Or extend rental to May 12 (~$200 + parking).' },
+  { id: 'maps', text: 'Download offline Google Maps: SMA, SMA→CDMX route, CDMX', meta: 'Critical — saves you in dead zones.' },
+  { id: 'amex', text: 'Notify AmEx + other cards of travel dates', meta: '' },
+  { id: 'roaming', text: 'Plan phone roaming: turn off, or set up eSIM', meta: 'Free WiFi everywhere. T-Mobile/Google Fi works without setup.' },
+  { id: 'pesos', text: 'Plan to get pesos at MEX/QRO ATM on arrival', meta: 'Banorte, Santander = best rates. DECLINE conversion.' },
+  { id: 'pack', text: 'Pack: layers, light jacket, hiking shoes, sunscreen, hat', meta: 'May = warm days 75–82°F, cool nights 50s.' },
+  { id: 'frida', text: 'Save Frida ticket QR codes offline', meta: 'Order R111412898. Screenshot or save to wallet.' },
+];
+
+// ================= APP =================
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  // Explicit mapping from view name to tab label
+  const tabLabels = { today: 'today', days: 'days', travel: 'travel', stays: 'stays', eat: 'eat', bookings: 'to-do', info: 'info' };
+  const wantedLabel = tabLabels[v];
+  if (wantedLabel) {
+    document.querySelectorAll('.tab').forEach(el => {
+      if (el.textContent.toLowerCase().includes(wantedLabel)) el.classList.add('active');
+    });
+  }
+  // Reset day-detail when leaving days view
+  if (v !== 'days') {
+    document.getElementById('day-detail-container').innerHTML = '';
+    document.getElementById('days-list').style.display = '';
+  }
+  window.scrollTo(0, 0);
+}
+
+function getCurrentDayIndex() {
+  const now = new Date();
+  const start = new Date(TRIP_START);
+  const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+  if (diff < 0) return -1; // before trip
+  if (diff >= DAYS.length) return -2; // after trip
+  return diff;
+}
+
+function renderToday() {
+  const idx = getCurrentDayIndex();
+  const el = document.getElementById('today-content');
+  if (idx === -1) {
+    const startStr = TRIP_START.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    const daysAway = Math.ceil((TRIP_START - new Date()) / (1000 * 60 * 60 * 24));
+    el.innerHTML = `
+      <div class="card">
+        <h2>${daysAway} day${daysAway === 1 ? '' : 's'} until takeoff</h2>
+        <div class="muted">Trip starts ${startStr}. Tap "To-do" below to see what to book.</div>
+      </div>
+      ${renderDayCard(0, true)}
+    `;
+  } else if (idx === -2) {
+    el.innerHTML = `<div class="card"><h2>Welcome home 👋</h2><div class="muted">The trip is in the past. All days remain available under "Days."</div></div>`;
+  } else {
+    const day = DAYS[idx];
+    el.innerHTML = `
+      <div class="card" style="background: var(--accent-soft); border-color: var(--accent);">
+        <div class="muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); font-weight: 600;">Today · Day ${day.n}</div>
+        <h2 style="margin-top: 4px;">${day.title}</h2>
+        <div class="muted">${day.headline}</div>
+      </div>
+      ${renderDayDetail(idx, false)}
+    `;
+  }
+}
+
+function renderDayCard(idx, isPreview) {
+  const day = DAYS[idx];
+  const isTodayClass = (idx === getCurrentDayIndex()) ? ' today' : '';
+  return `
+    <div class="day-card${isTodayClass}" onclick="openDay(${idx})">
+      <div class="info">
+        <div class="date">Day ${day.n} · ${day.date}</div>
+        <div class="title">${day.title}</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+  `;
+}
+
+function renderDaysList() {
+  const el = document.getElementById('days-list');
+  el.innerHTML = '<div class="day-list">' + DAYS.map((_, i) => renderDayCard(i, false)).join('') + '</div>';
+}
+
+function openDay(idx) {
+  document.getElementById('days-list').style.display = 'none';
+  document.getElementById('day-detail-container').innerHTML = renderDayDetail(idx, true);
+  window.scrollTo(0, 0);
+}
+
+function backToDayList() {
+  document.getElementById('day-detail-container').innerHTML = '';
+  document.getElementById('days-list').style.display = '';
+  window.scrollTo(0, 0);
+}
+
+function renderDayDetail(idx, withBack) {
+  const day = DAYS[idx];
+  let html = '';
+  if (withBack) html += '<button class="back-btn" onclick="backToDayList()">‹ All days</button>';
+  if (!withBack) html += `<div class="section-title">Today's plan</div>`;
+  html += `<div class="card">`;
+  if (withBack) {
+    html += `<div class="muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Day ${day.n} · ${day.date}</div>`;
+    html += `<h2 style="margin-top: 4px;">${day.title}</h2>`;
+    html += `<div class="muted" style="margin-bottom: 14px;">${day.headline}</div>`;
+  }
+  if (day.alert) html += `<div class="alert"><strong>⚠️ ${day.alert}</strong></div>`;
+  html += day.schedule.map(item => `
+    <div class="schedule-item">
+      <div class="time">${item.time}</div>
+      <div class="body">
+        <div class="name">${item.name}</div>
+        <div class="desc">${item.desc}</div>
+      </div>
+    </div>
+  `).join('');
+  html += `</div>`;
+  if (day.alt) html += `<div class="card tight"><div class="alt-section"><strong>Alternative</strong>${day.alt}</div></div>`;
+  if (day.notes) html += `<div class="card tight"><div class="muted" style="font-size: 13px;"><strong style="color: var(--text);">Note:</strong> ${day.notes}</div></div>`;
+  return html;
+}
+
+function renderEat() {
+  const filter = window._eatFilter || 'all';
+  const search = (document.getElementById('eat-search')?.value || '').toLowerCase();
+  let items = EAT;
+  if (filter === 'sma') items = items.filter(i => i.city === 'sma');
+  else if (filter === 'cdmx') items = items.filter(i => i.city === 'cdmx');
+  else if (filter === 'host') items = items.filter(i => i.host);
+  if (search) items = items.filter(i => i.name.toLowerCase().includes(search) || i.cat.toLowerCase().includes(search) || i.desc.toLowerCase().includes(search));
+  const el = document.getElementById('eat-list');
+  if (items.length === 0) {
+    el.innerHTML = '<div class="muted" style="text-align: center; padding: 40px 20px;">No matches.</div>';
+    return;
+  }
+  el.innerHTML = items.map(i => `
+    <div class="eat-card">
+      <div class="name">${i.name}${i.host ? '<span class="star" title="Host pick">★</span>' : ''}</div>
+      <div class="muted" style="font-size: 12px; margin-bottom: 4px;">${i.cat} · ${i.city.toUpperCase()}</div>
+      <div class="desc">${i.desc}</div>
+      <div class="meta">
+        ${i.area ? `<span>📍 ${i.area}</span>` : ''}
+      </div>
+      <div class="meta" style="margin-top: 8px; gap: 6px;">
+        ${i.lat && i.lng ? `<a href="https://www.google.com/maps/search/?api=1&query=${i.lat},${i.lng}" target="_blank" class="action-btn">🗺️ Map</a>` : ''}
+        ${i.tel ? `<a href="tel:${i.tel}" class="action-btn">📞 Call</a>` : ''}
+        ${i.ot ? `<a href="${i.ot}" target="_blank" class="action-btn">📅 OpenTable</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterEat(f) {
+  window._eatFilter = f;
+  document.querySelectorAll('.eat-pill').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  renderEat();
+}
+
+function searchEat() { renderEat(); }
+
+function renderChecklist(items, containerId, storageKey) {
+  const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map(item => {
+    const done = saved[item.id] ? 'done' : '';
+    const checked = saved[item.id] ? 'checked' : '';
+    return `
+      <label class="checklist-item ${done}" data-id="${item.id}">
+        <input type="checkbox" ${checked} onchange="toggleCheck('${storageKey}', '${item.id}', this)">
+        <div class="ctext">${item.text}${item.meta ? `<span class="meta">${item.meta}</span>` : ''}</div>
+      </label>
+    `;
+  }).join('');
+}
+
+function toggleCheck(storageKey, id, input) {
+  const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  saved[id] = input.checked;
+  localStorage.setItem(storageKey, JSON.stringify(saved));
+  input.closest('.checklist-item').classList.toggle('done', input.checked);
+}
+
+function copyText(el) {
+  const text = el.textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = el.textContent;
+      el.textContent = '✓ Copied';
+      setTimeout(() => el.textContent = orig, 1200);
+    });
+  }
+}
+
+// ============ LIVE NOTES (shared Google Doc) ============
+// PASTE YOUR GOOGLE DOC SHARE LINK HERE (between the quotes):
+const NOTES_URL = "PASTE_YOUR_GOOGLE_DOC_LINK_HERE";
+
+function openNotes() {
+  if (NOTES_URL === "PASTE_YOUR_GOOGLE_DOC_LINK_HERE" || !NOTES_URL) {
+    alert("Live notes link not set yet.\n\nEdit index.html and paste your Google Doc share URL into the NOTES_URL variable near the bottom of the script.");
+    return;
+  }
+  window.open(NOTES_URL, '_blank');
+}
+
+// ============ SERVICE WORKER (offline support) ============
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      // Silent fail — works fine without it, just no offline guarantee
+    });
+  });
+}
+
+// Init
+renderToday();
+renderDaysList();
+renderEat();
+renderChecklist(TODOS, 'todo-list', 'todo-checks');
+renderChecklist(PREP, 'prep-list', 'prep-checks');
+</script>
+</body>
+</html>
